@@ -1,8 +1,4 @@
 class Transaction{
-    // constructor(){
-    // }
-
-
     async dispatch(scenario){
         this.scenario = scenario.sort((item1,item2)=>item1.index-item2.index);
 
@@ -12,9 +8,6 @@ class Transaction{
         }else{
             throw new Error("First task wasn't found. Can't Continue")
         }
-        
-        
-    
     }
     async completeTask(lastValue,currId) {
         
@@ -23,6 +16,7 @@ class Transaction{
         console.log(`completeTask(${lastValue},${currId})`)
         if(currId===this.scenario.length){
             console.log(`lastVal: ${lastValue}`)
+            this.store = lastValue;
             return lastValue
         }
 
@@ -36,28 +30,32 @@ class Transaction{
     }catch (err){
         console.log(err.message)
         console.log(lastValue)
-        return this.rollback(lastValue,currId)
+        return this.rollback(lastValue,currId-1)
     }
     }
 
     async rollback(lastVal,currId){
-        if(currId-1 === -1){
+
+        
+        if(currId === -1){
+            this.store = null
             return lastVal
         }
 
         console.log(`rollback(${lastVal},${currId})`)
         
-
-        let currVal = await this.scenario[currId-1].restore(lastVal)
-        console.log(currVal)
-
+        if(typeof this.scenario[currId].restore !== "undefined"){
+            // console.log("T")
+        var currVal = await this.scenario[currId].restore(lastVal)
+        // console.log(currVal)
         return this.rollback(currVal,--currId)
+        }else{
+            // console.log("F")
+            // console.log(lastVal)
+        return this.rollback(lastVal,--currId)
+        }
+
     }
-
-    
-
-
-
 }
 
 const scenario = [
@@ -74,20 +72,20 @@ const scenario = [
         },
 				// callback for rollback
         restore: async (store) => {
-            return store -=1;
+            return store.pizda() -=1;
         }
     },
     {
-        index: 34,
+        index: 3,
         meta: {
             title: 'Task-2',
             description: 'Testing-2'
         },
 				// callbafck for main execution
-        call: async (store) => {
-            console.log("shemovida - 3")
-            return store +=1;
-        },
+        // call: async (store) => {
+        //     console.log("shemovida - 3")
+        //     return store +=1;
+        // },
 				// callback for rollback
         restore: async (store) => {
             return store -=1;
@@ -117,17 +115,18 @@ const scenario = [
     },
 ];
 
-
-
-
-
 const transaction = new Transaction();
 
 (async() => {
     try {
             let j = await transaction.dispatch(scenario);
             console.log(`final val: ${j}`)
-			// const store = transaction.store; // {} | null
+            const store = transaction.store; // {} | null
+            if (store === null){
+                console.log("FAILED. Restored Correctly")
+            }else{
+                console.log("SUCCEED")
+            }
             // const logs = transation.logs; // []
             
             console.log("Morcha")
@@ -138,26 +137,3 @@ const transaction = new Transaction();
             
     }
 })();
-
-
-
-
-        // let a = await this.scenario[0].call(null)
-        // console.log(a)
-        // let b = await this.scenario[1].call(a)
-        // console.log(b)
-        // let c = await this.scenario[2].call(b)
-        // console.log(c)
-        // try{
-        // let d = await this.scenario[3].call(c)
-        // }catch(err){
-        //     console.log(err.message)
-       
-        //     c = await this.scenario[3].restore(c)
-        //     console.log(c)
-        //     b = await this.scenario[2].restore(b)
-        //     console.log(b)
-        //     a = await this.scenario[2].restore(a)
-        //     console.log(a)
-        //     return null
-        // }
