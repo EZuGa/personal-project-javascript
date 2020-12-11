@@ -17,16 +17,41 @@ class Transaction{
     
     }
     async completeTask(lastValue,currId) {
+        
+        try{
+
         console.log(`completeTask(${lastValue},${currId})`)
         if(currId===this.scenario.length){
             console.log(`lastVal: ${lastValue}`)
             return lastValue
         }
 
+        if(currId+1 !== this.scenario[currId].index){
+            throw new Error("Numeracia arasworia P.S(aq gaakete rollback!!!)")
+        }
+
         let currVal = await this.scenario[currId].call(lastValue)
         console.log(`currVal:${currVal}`)
         return this.completeTask(currVal,++currId)
+    }catch (err){
+        console.log(err.message)
+        console.log(lastValue)
+        return this.rollback(lastValue,currId)
+    }
+    }
 
+    async rollback(lastVal,currId){
+        if(currId-1 === -1){
+            return lastVal
+        }
+
+        console.log(`rollback(${lastVal},${currId})`)
+        
+
+        let currVal = await this.scenario[currId-1].restore(lastVal)
+        console.log(currVal)
+
+        return this.rollback(currVal,--currId)
     }
 
     
@@ -53,23 +78,22 @@ const scenario = [
         }
     },
     {
-        index: 3,
+        index: 34,
         meta: {
-            title: 'Read popular customers',
-            description: 'This action is responsible for reading the most popular customers'
+            title: 'Task-2',
+            description: 'Testing-2'
         },
-				// callback for main execution
+				// callbafck for main execution
         call: async (store) => {
             console.log("shemovida - 3")
-            store +=1;
-            return store
-            
+            return store +=1;
         },
 				// callback for rollback
         restore: async (store) => {
             return store -=1;
         }
     },
+
     
 
 
@@ -115,7 +139,6 @@ const transaction = new Transaction();
     }
 })();
 
-console.log("Asyncron")
 
 
 
