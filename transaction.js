@@ -2,6 +2,10 @@ class Transaction{
     async dispatch(scenario){
         this.scenario = scenario.sort((item1,item2)=>item1.index-item2.index);
 
+        //aq rato ar agdebs errors???
+        this.checkScenarion(0)
+        
+
         if(this.scenario[0].index === 1){
             var  firstTask = await this.scenario[0].call(null)
             return this.completeTask(firstTask,1)
@@ -9,9 +13,43 @@ class Transaction{
             throw new Error("First task wasn't found. Can't Continue")
         }
     }
+    checkScenarion(id){
+        let currscenario = this.scenario[id]
+        for(let item in currscenario){
+            if(item !=="index" && item !=="meta" && item !== "call" && item !=="restore"){
+                throw new Error("Some additional field was passed.")
+            }
+        }
+
+        if(typeof currscenario.index !== "number"){
+            throw new Error("Index must be a number")
+        } 
+        if (
+            typeof currscenario.meta !== "object" &&
+            currscenario.meta instanceof  Map &&
+            currscenario.meta instanceof  WeakMap &&
+            currscenario.meta instanceof  Set &&
+            currscenario.meta instanceof  WeakSet
+        ){
+            throw new Error("Meta must be an object")
+        }
+        if(typeof currscenario.meta.title !== "string"){
+            throw new Error("Title must be a String")
+        }
+        if(typeof currscenario.meta.description !== "string"){
+            throw new Error("Title must be a String")
+        }
+        if(typeof currscenario.call !== "function"){
+            throw new Error("Call must be a function")
+        }
+        if(typeof currscenario.restore !== "function"){
+            throw new Error("Restore must be a function")
+        }
+    }
     async completeTask(lastValue,currId) {
         
         try{
+            this.checkScenarion(currId)
 
         console.log(`completeTask(${lastValue},${currId})`)
         if(currId===this.scenario.length){
@@ -72,7 +110,7 @@ const scenario = [
         },
 				// callback for rollback
         restore: async (store) => {
-            return store.pizda() -=1;
+            return store-=1;
         }
     },
     {
@@ -91,12 +129,8 @@ const scenario = [
             return store -=1;
         }
     },
-
-    
-
-
     {
-        index: 1,
+        index: 1,      
         meta: {
             title: 'Read popular customers',
             description: 'This action is responsible for reading the most popular customers'
@@ -115,6 +149,9 @@ const scenario = [
     },
 ];
 
+
+
+
 const transaction = new Transaction();
 
 (async() => {
@@ -132,8 +169,6 @@ const transaction = new Transaction();
             console.log("Morcha")
     } catch (err) {
             // log detailed error
-            console.log("MAIN ERROR:")
-            console.log(err.message)
-            
+            console.log("Critical Error: " + err.message)
     }
 })();
