@@ -1,13 +1,13 @@
 export const scenario = [
     {
-        index: 4,
+        index: 3,
         meta: {
             title: 'Read popular customers',
             description: 'This action is responsible for reading the most popular customers'
         },
 				// callback for main execution
         call: async (store) => {
-            console.log("call(2)")
+           
             store.ezu = "ezu"
         },
 				// callback for rollback
@@ -23,7 +23,7 @@ export const scenario = [
         },
 				// callback for main execution
         call: async (store) => {
-            console.log("call()")
+            
             store.chito = "chito"
 
         },
@@ -41,7 +41,7 @@ export const scenario = [
         },
 				// callback for main execution
         call: async (store) => {
-            console.log("call()")
+            
             store.jabaxa = "jabaxa"
         },
 				// callback for rollback

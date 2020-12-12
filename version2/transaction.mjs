@@ -7,7 +7,7 @@ import {scenarioValidation} from "./validator.mjs"
     constructor(){
         this.result = {
             succeed:true,
-            restored:true
+            restored:false
         }
     }
 
@@ -99,9 +99,13 @@ const transaction = new Transaction();
             const logs = transaction.logs; // []
             console.log(logs)
 
-
-            console.log(transaction.result.succeed)
-            console.log(transaction.result.restored)
+            if(transaction.result.succeed){
+                console.log("SUCCEED")
+            }else if(transaction.result.restored){
+                console.log("FAILED: (restored without error)")
+            }else{
+                console.log("FAILED: (restored with error)")
+            }
     } catch (err) {
         console.log("MAJOR ERROR")
         console.log(err.stack)
