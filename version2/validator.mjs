@@ -1,6 +1,7 @@
-export function scenarioValidation(scenario) {   
-    if(!scenario instanceof Array){
-        throw new Error("Scenario must be an array")
+export function scenarioValidation(scenario) {  
+
+    if(!(scenario instanceof Array)){
+        throw new Error("JIMA: Scenario Must be an array")
     } 
 
     for(let item of scenario){
