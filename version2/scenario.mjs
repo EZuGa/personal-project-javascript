@@ -29,6 +29,7 @@ export const scenario = [
         },
 				// callback for rollback
         restore: async (store) => {
+            
             delete store.chito
         }
     },
@@ -45,6 +46,7 @@ export const scenario = [
         },
 				// callback for rollback
         restore: async (store) => {
+            // throw new Error("REVEERSI VER QNA")
             delete store.jabaxa;
         }
     }

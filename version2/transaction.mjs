@@ -3,6 +3,14 @@ import {scenarioValidation} from "./validator.mjs"
 
 
  class Transaction{
+
+    constructor(){
+        this.result = {
+            succeed:true,
+            restored:true
+        }
+    }
+
     async dispatch(scenario){
         //validation
         scenarioValidation(scenario);
@@ -43,10 +51,8 @@ import {scenarioValidation} from "./validator.mjs"
                 this.logs[index] = logObj;
                 for(let i=index-1; i>=0; --i){
                     let reverseObj = Object.assign({},this.logs[i])
-                    
-                    
-                    
                     let element = scenario[i]
+                    try{
                     if(typeof element.restore === "undefined"){
                         continue;
                     }
@@ -56,9 +62,24 @@ import {scenarioValidation} from "./validator.mjs"
                     // console.log(logObj)
 
                     this.logs.push(reverseObj)
-                    
-                    
+                }catch(err){
+                    console.log("esaa racaa")
+                    reverseObj.error = {
+                        name:err.name,
+                        message:err.message,
+                        stack:err.stack
+                    };
+
+                    this.logs.push(reverseObj);
+
+                    this.result.succeed = false;
+                    this.result.restored = false;
+                    return;
+                }                
                 }
+                
+                this.result.succeed = false;
+                this.result.restored = true;
                 break;
             }
         }
@@ -77,6 +98,10 @@ const transaction = new Transaction();
             console.log(store)
             const logs = transaction.logs; // []
             console.log(logs)
+
+
+            console.log(transaction.result.succeed)
+            console.log(transaction.result.restored)
     } catch (err) {
         console.log("MAJOR ERROR")
         console.log(err.stack)
