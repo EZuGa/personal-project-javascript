@@ -1,4 +1,8 @@
-export function scenarioValidation(scenario) {    
+export function scenarioValidation(scenario) {   
+    if(!scenario instanceof Array){
+        throw new Error("Scenario must be an array")
+    } 
+
     for(let item of scenario){
         for(let current in item){
         if(current !=="index" && current !=="meta" && current !== "call" && current !=="restore"){
@@ -29,6 +33,15 @@ export function scenarioValidation(scenario) {
         if(typeof item.restore !== "function" && typeof item.restore !== "undefined"){
             throw new Error("Restore must be a function");
         }
-
     }
+
+
+    scenario = scenario.sort((item1,item2)=>item1.index-item2.index);
+
+    if(scenario[scenario.length-1].hasOwnProperty('restore')) {
+        throw new Error("Last Item must't have restore method"); 
+    }
+
+
+    return scenario
 }

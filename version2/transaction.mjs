@@ -1,22 +1,15 @@
-import {scenario} from "./scenario.mjs"
+// import {scenario} from "./scenario.mjs"
 import {scenarioValidation} from "./validator.mjs"
 
 
- class Transaction{
-
-    constructor(){
-        this.result = {
-            succeed:true,
-            restored:false
-        }
-    }
-
+ export class Transaction{
     async dispatch(scenario){
-        //validation
-        scenarioValidation(scenario);
+     
+
+        scenario = scenarioValidation(scenario);
+
+    
         
-        //sort
-        scenario = scenario.sort((item1,item2)=>item1.index-item2.index);
 
         //create properties
         this.logs = [];
@@ -41,45 +34,29 @@ import {scenarioValidation} from "./validator.mjs"
                 this.logs[index] = logObj;
 
             }catch(err){     
-                         
+                 
                 Object.assign(logObj.storeAfter,this.store)
                 logObj.error = {
                     name:err.name,
                     message:err.message,
                     stack:err.stack
                 }
+                delete logObj.storeBefore
+                delete logObj.storeAfter
+
                 this.logs[index] = logObj;
                 for(let i=index-1; i>=0; --i){
-                    let reverseObj = Object.assign({},this.logs[i])
                     let element = scenario[i]
-                    try{
+                    
+                    
                     if(typeof element.restore === "undefined"){
                         continue;
                     }
-                    reverseObj.storeBefore = Object.assign({},this.store)
+
                     await element.restore(this.store)
-                    reverseObj.storeAfter = Object.assign({},this.store)
-                    // console.log(logObj)
-
-                    this.logs.push(reverseObj)
-                }catch(err){
-                    console.log("esaa racaa")
-                    reverseObj.error = {
-                        name:err.name,
-                        message:err.message,
-                        stack:err.stack
-                    };
-
-                    this.logs.push(reverseObj);
-
-                    this.result.succeed = false;
-                    this.result.restored = false;
-                    return;
-                }                
+         
                 }
                 
-                this.result.succeed = false;
-                this.result.restored = true;
                 break;
             }
         }
@@ -87,32 +64,29 @@ import {scenarioValidation} from "./validator.mjs"
 }
 
 
-const transaction = new Transaction();
+// const transaction = new Transaction();
 
-(async() => {
-    try {
+// (async() => {
+//     try {
         
-            await transaction.dispatch(scenario);
+//             await transaction.dispatch(scenario);
             
-            const store = transaction.store; // {} | null
-            console.log(store)
-            const logs = transaction.logs; // []
-            console.log(logs)
+//             const store = transaction.store; // {} | null
+//             console.log(store)
+//             const logs = transaction.logs; // []
+//             console.log(logs)
 
-            if(transaction.result.succeed){
-                console.log("SUCCEED")
-            }else if(transaction.result.restored){
-                console.log("FAILED: (restored without error)")
-            }else{
-                console.log("FAILED: (restored with error)")
-            }
-    } catch (err) {
-        console.log("MAJOR ERROR")
-        console.log(err.stack)
-        // console.log(transaction.logs)
-        
-    }
-})();
+//             if(![...Object.keys(store)].length){
+//                 console.log("FAILED: (restored without error)")
+//             }else{
+//                 console.log("SUCCEED")
+//             }
+
+//     } catch (err) {
+//         console.log(err.stack)
+//         console.log("FAILED: (restored with error)")
+//     }
+// })();
 
 
 

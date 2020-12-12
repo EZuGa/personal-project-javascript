@@ -1,19 +1,27 @@
-// import {Transaction} from "./transaction.mjs"
+import {scenario} from "./scenario.mjs"
+import {Transaction} from "./transaction.mjs"
 
-// let transaction = new Transaction()
 
+const transaction = new Transaction();
 
-// (async() => {
-//     try {
+(async() => {
+    try {
         
-//             await transaction.dispatch(scenario);
+            await transaction.dispatch(scenario);
             
-//             const store = transaction.store; // {} | null
-//             console.log(store)
-//             const logs = transaction.logs; // []
-//             console.log(logs)
-//     } catch (err) {
-        
-        
-//     }
-// })();
+            const store = transaction.store; // {} | null
+            console.log(store)
+            const logs = transaction.logs; // []
+            console.log(logs)
+
+            if(![...Object.keys(store)].length){
+                console.log("FAILED: (restored without error)")
+            }else{
+                console.log("SUCCEED")
+            }
+
+    } catch (err) {
+        console.log(err.stack)
+        console.log("FAILED: (restored with error)")
+    }
+})();
