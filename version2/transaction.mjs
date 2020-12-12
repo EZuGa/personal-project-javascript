@@ -31,23 +31,23 @@ import {scenarioValidation} from "./validator.mjs"
                 await element.call(this.store);
                 Object.assign(logObj.storeAfter,this.store)
                 this.logs[index] = logObj;
-               
-            }catch(err){                
+
+            }catch(err){     
+                         
                 Object.assign(logObj.storeAfter,this.store)
                 logObj.error = {
                     name:err.name,
                     message:err.message,
                     stack:err.stack
                 }
-                
+                this.logs[index] = logObj;
                 for(let i=index-1; i>=0; --i){
-                    
                     let element = scenario[i]
                     if(typeof element.restore === "undefined"){
                         continue;
                     }
                     await element.restore(this.store)
-                    this.logs[index] = logObj;
+                    // this.logs[index] = logObj;
                 }
                 break;
             }
@@ -68,7 +68,8 @@ const transaction = new Transaction();
             const logs = transaction.logs; // []
             console.log(logs)
     } catch (err) {
-        
+        console.log("MAJOR ERROR")
+        console.log(transaction.store)
         
     }
 })();

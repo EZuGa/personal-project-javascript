@@ -1,6 +1,5 @@
 export function scenarioValidation(scenario) {    
     for(let item of scenario){
-        
         for(let current in item){
         if(current !=="index" && current !=="meta" && current !== "call" && current !=="restore"){
             throw new Error("Some additional field was passed.");
@@ -33,4 +32,3 @@ export function scenarioValidation(scenario) {
 
     }
 }
-

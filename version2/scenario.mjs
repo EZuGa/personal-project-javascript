@@ -1,18 +1,17 @@
 export const scenario = [
     {
-        index: 3,
+        index: 4,
         meta: {
             title: 'Read popular customers',
             description: 'This action is responsible for reading the most popular customers'
         },
 				// callback for main execution
         call: async (store) => {
-            console.log("call()")
+            console.log("call(2)")
             store.ezu = "ezu"
         },
 				// callback for rollback
         restore: async (store) => {
-            console.log("aqac?")
             delete store.ezu;
         }
     },
@@ -30,6 +29,7 @@ export const scenario = [
         },
 				// callback for rollback
         restore: async (store) => {
+            throw new Error("vnaxot")
             delete store.chito
         }
     },
