@@ -29,7 +29,6 @@ export const scenario = [
         },
 				// callback for rollback
         restore: async (store) => {
-            throw new Error("vnaxot")
             delete store.chito
         }
     },

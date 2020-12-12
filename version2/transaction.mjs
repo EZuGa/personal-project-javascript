@@ -42,12 +42,22 @@ import {scenarioValidation} from "./validator.mjs"
                 }
                 this.logs[index] = logObj;
                 for(let i=index-1; i>=0; --i){
+                    let reverseObj = Object.assign({},this.logs[i])
+                    
+                    
+                    
                     let element = scenario[i]
                     if(typeof element.restore === "undefined"){
                         continue;
                     }
+                    reverseObj.storeBefore = Object.assign({},this.store)
                     await element.restore(this.store)
-                    // this.logs[index] = logObj;
+                    reverseObj.storeAfter = Object.assign({},this.store)
+                    // console.log(logObj)
+
+                    this.logs.push(reverseObj)
+                    
+                    
                 }
                 break;
             }
@@ -69,7 +79,8 @@ const transaction = new Transaction();
             console.log(logs)
     } catch (err) {
         console.log("MAJOR ERROR")
-        console.log(transaction.store)
+        console.log(err.stack)
+        // console.log(transaction.logs)
         
     }
 })();
