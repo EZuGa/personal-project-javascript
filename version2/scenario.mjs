@@ -8,7 +8,6 @@ export const scenario = [
         },
 				// callback for main execution
         call: async (store) => {
-            // throw new Error("boloshi")
             store.ezu = "ezu"
         },
 				// callback for rollback
